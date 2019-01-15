@@ -7,6 +7,8 @@ var Direction;
     Direction[Direction["UP"] = 2] = "UP";
     Direction[Direction["DOWN"] = 3] = "DOWN";
 })(Direction || (Direction = {}));
+var TILE_SIZE = 20;
+var GAME_SPEED = 100;
 var Position = /** @class */ (function () {
     function Position(xPosition, yPosition) {
         this.xPostion = xPosition;
@@ -16,9 +18,8 @@ var Position = /** @class */ (function () {
 }());
 var SnakeGame = /** @class */ (function () {
     function SnakeGame(mCanvas) {
-        this.gameSpeed = 100;
         this.isGamePaused = false;
-        this.canvas = mCanvas;
+        this.snakeArray = new Array();
         this.context = mCanvas.getContext("2d");
         this.canvasHeight = mCanvas.height;
         this.canvasWidth = mCanvas.width;
@@ -32,67 +33,110 @@ var SnakeGame = /** @class */ (function () {
     };
     SnakeGame.prototype.start = function () {
         var _this = this;
-        this.SnakePosition = new Position(100, 100);
-        this.food = new Position(100, 164);
+        this.initGameObjects();
         setInterval(function () {
             if (!_this.isGamePaused) {
                 snakeGame.loop();
             }
-        }, this.gameSpeed);
+        }, GAME_SPEED);
+    };
+    SnakeGame.prototype.initGameObjects = function () {
+        this.snakeArray.push(new Position(150, 150));
+        this.snakeArray.push(new Position(130, 150));
+        this.snakeArray.push(new Position(110, 150));
+        this.snakeArray.push(new Position(90, 150));
+        this.snakeArray.push(new Position(70, 150));
+        this.food = new Position(70, 170);
     };
     SnakeGame.prototype.loop = function () {
-        this.move();
-        if (this.SnakePosition.xPostion == this.food.xPostion && this.SnakePosition.yPosition == this.food.yPosition) {
-            this.eat();
-        }
         this.checkBorderCollision();
-        this.draw();
-    };
-    SnakeGame.prototype.eat = function () {
-        console.log("eat");
-    };
-    SnakeGame.prototype.drawApple = function () {
-        this.context.fillStyle = "red";
-        this.context.fillRect(this.food.xPostion, this.food.yPosition, 32, 32);
-    };
-    SnakeGame.prototype.draw = function () {
+        this.SnakeTouchItself();
         this.clearCanvas();
-        this.drawApple();
-        this.context.fillStyle = "green";
-        this.context.fillRect(this.SnakePosition.xPostion, this.SnakePosition.yPosition, 32, 32);
+        this.drawFood();
+        this.moveSnake();
+        this.drawSnake();
     };
-    SnakeGame.prototype.checkBorderCollision = function () {
-        if (this.SnakePosition.xPostion <= 8) {
-            console.log("dead");
-            this.isGamePaused = true;
-        }
-        if (this.SnakePosition.xPostion >= this.canvasWidth - 32) {
-            console.log("dead");
-            this.isGamePaused = true;
-        }
-        if (this.SnakePosition.yPosition >= this.canvasHeight - 32) {
-            console.log("dead");
-            this.isGamePaused = true;
-        }
-        if (this.SnakePosition.yPosition <= 8) {
-            console.log("dead");
-            this.isGamePaused = true;
-        }
-    };
-    SnakeGame.prototype.move = function () {
+    SnakeGame.prototype.moveSnake = function () {
+        var headOfSnake = new Position(this.snakeArray[0].xPostion, this.snakeArray[0].yPosition);
         switch (this.direction) {
             case Direction.LEFT:
-                this.SnakePosition.xPostion -= 32;
+                headOfSnake.xPostion -= TILE_SIZE;
                 break;
             case Direction.UP:
-                this.SnakePosition.yPosition -= 32;
+                headOfSnake.yPosition -= TILE_SIZE;
                 break;
             case Direction.RIGHT:
-                this.SnakePosition.xPostion += 32;
+                headOfSnake.xPostion += TILE_SIZE;
                 break;
             case Direction.DOWN:
-                this.SnakePosition.yPosition += 32;
+                headOfSnake.yPosition += TILE_SIZE;
                 break;
+        }
+        this.snakeArray.unshift(headOfSnake);
+        var isFoodEaten = (this.snakeArray[0].xPostion === this.food.xPostion
+            && this.snakeArray[0].yPosition === this.food.yPosition);
+        if (isFoodEaten) {
+            console.log("EAT FOOD");
+            this.createFood();
+        }
+        else {
+            this.snakeArray.pop();
+        }
+    };
+    /**
+     * Function to draw the snake
+     */
+    SnakeGame.prototype.drawSnake = function () {
+        var _this = this;
+        this.context.fillStyle = "red";
+        this.context.strokeStyle = "black";
+        this.snakeArray.forEach(function (snakeElement) {
+            _this.context.fillRect(snakeElement.xPostion, snakeElement.yPosition, TILE_SIZE, TILE_SIZE);
+            _this.context.strokeRect(snakeElement.xPostion, snakeElement.yPosition, TILE_SIZE, TILE_SIZE);
+        });
+    };
+    SnakeGame.prototype.createFood = function () {
+        var _this = this;
+        this.food.xPostion = 30;
+        this.food.yPosition = 170;
+        this.snakeArray.forEach(function (snakeElement) {
+            var isFoodOnSnake = (snakeElement.xPostion == _this.food.xPostion && snakeElement.yPosition == _this.food.yPosition);
+            if (isFoodOnSnake) {
+                _this.createFood();
+            }
+        });
+    };
+    SnakeGame.prototype.drawFood = function () {
+        this.context.fillStyle = 'blue';
+        this.context.strokeStyle = 'darkred';
+        this.context.fillRect(this.food.xPostion, this.food.yPosition, 20, 20);
+        this.context.strokeRect(this.food.xPostion, this.food.yPosition, 20, 20);
+    };
+    //BE AWARE OF THE >==== THINFS
+    SnakeGame.prototype.SnakeTouchItself = function () {
+        for (var i = 0; i < this.snakeArray.length; i++) {
+            var isSnakeTouchingItself = this.snakeArray[i].xPostion === this.snakeArray[0].xPostion && this.snakeArray[i].yPosition === this.snakeArray[0].yPosition;
+            if (isSnakeTouchingItself) {
+                console.log("EAT ITSELF");
+            }
+        }
+    };
+    SnakeGame.prototype.checkBorderCollision = function () {
+        if (this.snakeArray[0].xPostion < 31) {
+            console.log("deadss");
+            this.isGamePaused = true;
+        }
+        if (this.snakeArray[0].xPostion >= this.canvasWidth - 31) {
+            console.log("dead");
+            this.isGamePaused = true;
+        }
+        if (this.snakeArray[0].yPosition >= this.canvasHeight - 31) {
+            console.log("dead");
+            this.isGamePaused = true;
+        }
+        if (this.snakeArray[0].yPosition <= 31) {
+            console.log("dead");
+            this.isGamePaused = true;
         }
     };
     SnakeGame.prototype.moveLeft = function () {
