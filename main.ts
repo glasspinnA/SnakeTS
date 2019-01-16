@@ -3,8 +3,8 @@ enum Direction {
     LEFT, RIGHT, UP, DOWN
 }
 
-const TILE_SIZE = 20;
-const GAME_SPEED = 100;
+const TILE_SIZE = 10;
+const GAME_SPEED = 80;
 
 class Position {
     xPostion: number;
@@ -60,11 +60,6 @@ class SnakeGame {
 
     initGameObjects() {
         this.snakeArray.push(new Position(150, 150));
-        this.snakeArray.push(new Position(130, 150));
-        this.snakeArray.push(new Position(110, 150));
-        this.snakeArray.push(new Position(90, 150));
-        this.snakeArray.push(new Position(70, 150));
-
         this.food = new Position(70, 170);
     }
 
@@ -142,39 +137,42 @@ class SnakeGame {
     drawFood() {
         this.context.fillStyle = 'blue';
         this.context.strokeStyle = 'darkred';
-        this.context.fillRect(this.food.xPostion, this.food.yPosition, 20, 20);
-        this.context.strokeRect(this.food.xPostion, this.food.yPosition, 20, 20);
+        this.context.fillRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
+        this.context.strokeRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
 
     }
 
     //BE AWARE OF THE >==== THINFS
     private SnakeTouchItself() {
-        for (let i = 0; i < this.snakeArray.length; i++) {
-            let isSnakeTouchingItself = this.snakeArray[i].xPostion === this.snakeArray[0].xPostion && this.snakeArray[i].yPosition === this.snakeArray[0].yPosition;
+        for (let i = 4; i < this.snakeArray.length; i++) {
+            const isSnakeTouchingItself = this.snakeArray[i].xPostion == this.snakeArray[0].xPostion && this.snakeArray[i].yPosition == this.snakeArray[0].yPosition;
             if (isSnakeTouchingItself) {
+                console.log("Current" + this.snakeArray[i].xPostion);
+                console.log(this.snakeArray[0].xPostion);
+
                 console.log("EAT ITSELF");
             }
         }
     }
 
     private checkBorderCollision() {
-        if (this.snakeArray[0].xPostion < 31) {
+        if (this.snakeArray[0].xPostion < TILE_SIZE * 2) {
             console.log("deadss");
             this.isGamePaused = true;
         }
 
-        if (this.snakeArray[0].xPostion >= this.canvasWidth - 31) {
+        if (this.snakeArray[0].xPostion > this.canvasWidth) {
             console.log("dead");
             this.isGamePaused = true;
         }
 
-        if (this.snakeArray[0].yPosition >= this.canvasHeight - 31) {
+        if (this.snakeArray[0].yPosition > this.canvasWidth - 10) {
             console.log("dead");
             this.isGamePaused = true;
         }
 
-        if (this.snakeArray[0].yPosition <= 31) {
-            console.log("dead");
+        if (this.snakeArray[0].yPosition < TILE_SIZE * 2) {
+            console.log("desad");
             this.isGamePaused = true;
         }
     }
