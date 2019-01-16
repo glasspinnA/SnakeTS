@@ -243,7 +243,7 @@ window.onload = () => {
 
     var canvas = <HTMLCanvasElement>document.getElementById('snakeCanvas');
     snakeGame = new SnakeGame(canvas);
-    snakeGame.start();
+    //snakeGame.start();
 };
 
 
