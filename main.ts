@@ -110,7 +110,7 @@ class SnakeGame {
      * Function to draw the snake
      */
     private drawSnake() {
-        this.context.fillStyle = "red";
+        this.context.fillStyle = "#20bf6b";
         this.context.strokeStyle = "black";
 
         this.snakeArray.forEach((snakeElement) => {
@@ -135,8 +135,8 @@ class SnakeGame {
     }
 
     drawFood() {
-        this.context.fillStyle = 'blue';
-        this.context.strokeStyle = 'darkred';
+        this.context.fillStyle = '#fc5c65';
+        this.context.strokeStyle = '#eb3b5a';
         this.context.fillRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
         this.context.strokeRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
 
@@ -161,7 +161,7 @@ class SnakeGame {
             this.isGamePaused = true;
         }
 
-        if (this.snakeArray[0].xPostion > this.canvasWidth) {
+        if (this.snakeArray[0].xPostion > this.canvasWidth - (TILE_SIZE)) {
             console.log("dead");
             this.isGamePaused = true;
         }
@@ -241,10 +241,22 @@ function keyPressed(event: KeyboardEvent) {
 window.onload = () => {
     document.addEventListener("keydown", keyPressed);
 
-    var canvas = <HTMLCanvasElement>document.getElementById('snakeCanvas');
+    let canvas = initGameWindow();
+
     snakeGame = new SnakeGame(canvas);
-    //snakeGame.start();
+    snakeGame.start();
 };
+
+function initGameWindow() {
+    var canvas = <HTMLCanvasElement>document.getElementById('snakeCanvas');
+    var parent = <HTMLDivElement>document.getElementById("game-wrapper");
+    canvas.width = parent.offsetWidth;
+    canvas.height = parent.offsetHeight;
+
+    return canvas;
+}
+
+
 
 
 

@@ -84,7 +84,7 @@ var SnakeGame = /** @class */ (function () {
      */
     SnakeGame.prototype.drawSnake = function () {
         var _this = this;
-        this.context.fillStyle = "red";
+        this.context.fillStyle = "#20bf6b";
         this.context.strokeStyle = "black";
         this.snakeArray.forEach(function (snakeElement) {
             _this.context.fillRect(snakeElement.xPostion, snakeElement.yPosition, TILE_SIZE, TILE_SIZE);
@@ -103,8 +103,8 @@ var SnakeGame = /** @class */ (function () {
         });
     };
     SnakeGame.prototype.drawFood = function () {
-        this.context.fillStyle = 'blue';
-        this.context.strokeStyle = 'darkred';
+        this.context.fillStyle = '#fc5c65';
+        this.context.strokeStyle = '#eb3b5a';
         this.context.fillRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
         this.context.strokeRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
     };
@@ -124,7 +124,7 @@ var SnakeGame = /** @class */ (function () {
             console.log("deadss");
             this.isGamePaused = true;
         }
-        if (this.snakeArray[0].xPostion > this.canvasWidth) {
+        if (this.snakeArray[0].xPostion > this.canvasWidth - (TILE_SIZE)) {
             console.log("dead");
             this.isGamePaused = true;
         }
@@ -191,7 +191,14 @@ function keyPressed(event) {
 }
 window.onload = function () {
     document.addEventListener("keydown", keyPressed);
-    var canvas = document.getElementById('snakeCanvas');
+    var canvas = initGameWindow();
     snakeGame = new SnakeGame(canvas);
     snakeGame.start();
 };
+function initGameWindow() {
+    var canvas = document.getElementById('snakeCanvas');
+    var parent = document.getElementById("game-wrapper");
+    canvas.width = parent.offsetWidth;
+    canvas.height = parent.offsetHeight;
+    return canvas;
+}

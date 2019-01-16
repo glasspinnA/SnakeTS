@@ -1,12 +1,115 @@
-canvas {
-    display: block;
-    position: absolute;
-    border: 1px solid #000;
-    margin: auto;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-}   
+@mixin center-element {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+@mixin os-circle-attributes {
+    width:20px;
+    height:20px;
+    border-radius: 100%;
+    content:'';
+    position: relative;
+}
+
+
+@mixin custom-box-shadow {
+    -webkit-box-shadow: 7px 2px 10px -1px rgba(0,0,0,0.75);
+    -moz-box-shadow: 7px 2px 10px -1px rgba(0,0,0,0.75);
+    box-shadow: 7px 2px 10px -1px rgba(0,0,0,0.75);
+}
+
+$circle-spacing: 30px;
+
+//To be able to easily change colors
+$bg-color:#2c2c54;
+$bg-color-search-bar:#718093;
+$bg-color-top-bar:#40407a;
+$bg-color-webpage:#7f8fa6;
+
+
+body{
+    font-weight: bold;
+    font-family: Segoe UI, Tahoma, Geneva, Verdana, sans-serif;
+    padding:0;
+    margin:0;
+}
+
+.container{
+    @include center-element;
+    width:100%;
+    background:$bg-color;
+    height:100vh;
+}
+
+.web-browser{
+    @include custom-box-shadow;
+    width: 80%;
+    height: 90%;
+    border-radius: 20px;
+    border:1.5px solid black;
+    overflow: hidden;
+}
+
+.top-bar{
+    width: 100%;
+    height: 10%;
+    background: $bg-color-top-bar;
+    border-bottom: 2px solid #192a56;
+}
+
+.os-circle{
+    @include os-circle-attributes;
+    background:#ff3f34;
+    border:1.5px solid #ff5e57;
+    left:$circle-spacing;
+    top:20px;
+    float:left;
+    &:before{
+        @include os-circle-attributes;
+        position: absolute;
+        background: #ffd32a;
+        border:1.5px solid #ffdd59;
+        left:$circle-spacing;
+    }
+    &:after{
+        @include os-circle-attributes;
+        position: absolute;
+        background: #05c46b;
+        border:1.5px solid #0be881;
+        left:$circle-spacing * 2;
+    }
+}
+
+
+.search-bar{
+    background:$bg-color-search-bar;
+    border: 1.5px solid darken(#718093,10%);
+    color:#353b48;
+    position: relative;
+    margin:0px auto;
+    top:17px;
+    width:70%;
+    padding:5px 0px 6px 15px;
+    border-radius: 20px;
+}
+
+.screen{
+    @include center-element;
+    width: 100%;
+    height:90%;
+    background: $bg-color-webpage;
+}
+
+#game-wrapper{
+    @include custom-box-shadow;
+    width:80%;
+    height: 90%;
+}
+
+canvas{
+    background: black;
+}
 
  
