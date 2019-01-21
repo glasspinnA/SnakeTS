@@ -1,10 +1,11 @@
-var snakeGame: SnakeGame;
+
 enum Direction {
     LEFT, RIGHT, UP, DOWN
 }
 
+var snakeGame: SnakeGame;
 const TILE_SIZE = 10;
-const GAME_SPEED = 80;
+const GAME_SPEED = 100;
 
 class Position {
     xPostion: number;
@@ -19,16 +20,14 @@ class Position {
 
 class SnakeGame {
     private context: CanvasRenderingContext2D;
-    private direction: Direction;
-
+    private direction: Direction = NaN;
     private canvasHeight: number;
     private canvasWidth: number;
-
     private isGamePaused: boolean = false;
 
     private snakeArray: Array<Position> = new Array();
     private food: Position;
-
+    private game: any;
 
     constructor(mCanvas: HTMLCanvasElement) {
         this.context = mCanvas.getContext("2d");
@@ -37,20 +36,35 @@ class SnakeGame {
     }
 
 
+    /**
+     * Function to clear the canvas from objects 
+     */
     private clearCanvas() {
         this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     }
 
+    /**
+     * Function to stop the game 
+     */
+    private stopGame() {
+        clearInterval(this.game);
+        alert("Game Over!");
+    }
+
+    /**
+     * Function to pause game
+     */
     public pauseGame() {
-        //clearInterval(this.game);
         this.isGamePaused = !this.isGamePaused;
     }
 
+    /**
+     * Function to start the game 
+     */
     public start() {
-
         this.initGameObjects();
 
-        setInterval(() => {
+        this.game = setInterval(() => {
             if (!this.isGamePaused) {
                 snakeGame.loop();
             }
@@ -58,21 +72,27 @@ class SnakeGame {
 
     }
 
-    initGameObjects() {
+    /**
+     * Function to init snake and first apple 
+     */
+    private initGameObjects() {
         this.snakeArray.push(new Position(150, 150));
-        this.food = new Position(70, 170);
+        this.food = new Position(this.generateFoodCoordinates(), this.generateFoodCoordinates());
     }
 
 
     private loop() {
         this.checkBorderCollision();
-        this.SnakeTouchItself();
+        this.snakeTouchItself();
         this.clearCanvas();
         this.drawFood();
-        this.moveSnake();
         this.drawSnake();
+        this.moveSnake();
     }
 
+    /**
+     * Function to move snake 
+     */
     private moveSnake() {
         let headOfSnake = new Position(this.snakeArray[0].xPostion, this.snakeArray[0].yPosition);
 
@@ -121,10 +141,12 @@ class SnakeGame {
 
 
 
+    /**
+     * Function to create food 
+     */
     createFood() {
-        this.food.xPostion = 30;
-        this.food.yPosition = 170;
-
+        this.food.xPostion = this.generateFoodCoordinates();
+        this.food.yPosition = this.generateFoodCoordinates();
 
         this.snakeArray.forEach((snakeElement) => {
             const isFoodOnSnake = (snakeElement.xPostion == this.food.xPostion && snakeElement.yPosition == this.food.yPosition);
@@ -134,45 +156,54 @@ class SnakeGame {
         });
     }
 
+    /**
+     * Function to generate coordinates for food 
+     */
+    generateFoodCoordinates() {
+        const thresholdValue = this.canvasWidth / 10;
+        let position = (Math.floor(Math.random() * thresholdValue) + 1) * 10;
+        return position;
+    }
+
+    /**
+     * Function to draw out the food on the canvas 
+     */
     drawFood() {
         this.context.fillStyle = '#fc5c65';
         this.context.strokeStyle = '#eb3b5a';
         this.context.fillRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
         this.context.strokeRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
-
     }
 
-    //BE AWARE OF THE >==== THINFS
-    private SnakeTouchItself() {
-        for (let i = 4; i < this.snakeArray.length; i++) {
+    /**
+     * Function to check if the snake touches itself
+     */
+    private snakeTouchItself() {
+        for (let i = 3; i < this.snakeArray.length; i++) {
             const isSnakeTouchingItself = this.snakeArray[i].xPostion == this.snakeArray[0].xPostion && this.snakeArray[i].yPosition == this.snakeArray[0].yPosition;
             if (isSnakeTouchingItself) {
-                console.log("Current" + this.snakeArray[i].xPostion);
-                console.log(this.snakeArray[0].xPostion);
-
-                console.log("EAT ITSELF");
+                this.stopGame();
             }
         }
     }
 
+    /**
+     * Function th check if the snake touches the borders of the canvas
+     */
     private checkBorderCollision() {
-        if (this.snakeArray[0].xPostion < TILE_SIZE * 2) {
-            console.log("deadss");
+        if (this.snakeArray[0].xPostion <= 0) {
             this.isGamePaused = true;
         }
 
-        if (this.snakeArray[0].xPostion > this.canvasWidth - (TILE_SIZE)) {
-            console.log("dead");
+        if (this.snakeArray[0].xPostion >= this.canvasWidth - TILE_SIZE) {
             this.isGamePaused = true;
         }
 
-        if (this.snakeArray[0].yPosition > this.canvasWidth - 10) {
-            console.log("dead");
+        if (this.snakeArray[0].yPosition >= this.canvasWidth - TILE_SIZE) {
             this.isGamePaused = true;
         }
 
-        if (this.snakeArray[0].yPosition < TILE_SIZE * 2) {
-            console.log("desad");
+        if (this.snakeArray[0].yPosition <= 0) {
             this.isGamePaused = true;
         }
     }
@@ -205,6 +236,9 @@ class SnakeGame {
 
 
 
+/**
+ * Function to determind which key is pressed by the user 
+ */
 function keyPressed(event: KeyboardEvent) {
     const KEYBOARD_BUTTON = event.keyCode;
     const KEY_LEFT: number = 37;

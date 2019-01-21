@@ -1,5 +1,4 @@
 "use strict";
-var snakeGame;
 var Direction;
 (function (Direction) {
     Direction[Direction["LEFT"] = 0] = "LEFT";
@@ -7,8 +6,9 @@ var Direction;
     Direction[Direction["UP"] = 2] = "UP";
     Direction[Direction["DOWN"] = 3] = "DOWN";
 })(Direction || (Direction = {}));
+var snakeGame;
 var TILE_SIZE = 10;
-var GAME_SPEED = 80;
+var GAME_SPEED = 100;
 var Position = /** @class */ (function () {
     function Position(xPosition, yPosition) {
         this.xPostion = xPosition;
@@ -18,40 +18,62 @@ var Position = /** @class */ (function () {
 }());
 var SnakeGame = /** @class */ (function () {
     function SnakeGame(mCanvas) {
+        this.direction = NaN;
         this.isGamePaused = false;
         this.snakeArray = new Array();
         this.context = mCanvas.getContext("2d");
         this.canvasHeight = mCanvas.height;
         this.canvasWidth = mCanvas.width;
     }
+    /**
+     * Function to clear the canvas from objects
+     */
     SnakeGame.prototype.clearCanvas = function () {
         this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     };
+    /**
+     * Function to stop the game
+     */
+    SnakeGame.prototype.stopGame = function () {
+        clearInterval(this.game);
+        alert("Game Over!");
+    };
+    /**
+     * Function to pause game
+     */
     SnakeGame.prototype.pauseGame = function () {
-        //clearInterval(this.game);
         this.isGamePaused = !this.isGamePaused;
     };
+    /**
+     * Function to start the game
+     */
     SnakeGame.prototype.start = function () {
         var _this = this;
         this.initGameObjects();
-        setInterval(function () {
+        this.game = setInterval(function () {
             if (!_this.isGamePaused) {
                 snakeGame.loop();
             }
         }, GAME_SPEED);
     };
+    /**
+     * Function to init snake and first apple
+     */
     SnakeGame.prototype.initGameObjects = function () {
         this.snakeArray.push(new Position(150, 150));
-        this.food = new Position(70, 170);
+        this.food = new Position(this.generateFoodCoordinates(), this.generateFoodCoordinates());
     };
     SnakeGame.prototype.loop = function () {
         this.checkBorderCollision();
-        this.SnakeTouchItself();
+        this.snakeTouchItself();
         this.clearCanvas();
         this.drawFood();
-        this.moveSnake();
         this.drawSnake();
+        this.moveSnake();
     };
+    /**
+     * Function to move snake
+     */
     SnakeGame.prototype.moveSnake = function () {
         var headOfSnake = new Position(this.snakeArray[0].xPostion, this.snakeArray[0].yPosition);
         switch (this.direction) {
@@ -91,10 +113,13 @@ var SnakeGame = /** @class */ (function () {
             _this.context.strokeRect(snakeElement.xPostion, snakeElement.yPosition, TILE_SIZE, TILE_SIZE);
         });
     };
+    /**
+     * Function to create food
+     */
     SnakeGame.prototype.createFood = function () {
         var _this = this;
-        this.food.xPostion = 30;
-        this.food.yPosition = 170;
+        this.food.xPostion = this.generateFoodCoordinates();
+        this.food.yPosition = this.generateFoodCoordinates();
         this.snakeArray.forEach(function (snakeElement) {
             var isFoodOnSnake = (snakeElement.xPostion == _this.food.xPostion && snakeElement.yPosition == _this.food.yPosition);
             if (isFoodOnSnake) {
@@ -102,38 +127,48 @@ var SnakeGame = /** @class */ (function () {
             }
         });
     };
+    /**
+     * Function to generate coordinates for food
+     */
+    SnakeGame.prototype.generateFoodCoordinates = function () {
+        var thresholdValue = this.canvasWidth / 10;
+        var position = (Math.floor(Math.random() * thresholdValue) + 1) * 10;
+        return position;
+    };
+    /**
+     * Function to draw out the food on the canvas
+     */
     SnakeGame.prototype.drawFood = function () {
         this.context.fillStyle = '#fc5c65';
         this.context.strokeStyle = '#eb3b5a';
         this.context.fillRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
         this.context.strokeRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
     };
-    //BE AWARE OF THE >==== THINFS
-    SnakeGame.prototype.SnakeTouchItself = function () {
-        for (var i = 4; i < this.snakeArray.length; i++) {
+    /**
+     * Function to check if the snake touches itself
+     */
+    SnakeGame.prototype.snakeTouchItself = function () {
+        for (var i = 3; i < this.snakeArray.length; i++) {
             var isSnakeTouchingItself = this.snakeArray[i].xPostion == this.snakeArray[0].xPostion && this.snakeArray[i].yPosition == this.snakeArray[0].yPosition;
             if (isSnakeTouchingItself) {
-                console.log("Current" + this.snakeArray[i].xPostion);
-                console.log(this.snakeArray[0].xPostion);
-                console.log("EAT ITSELF");
+                this.stopGame();
             }
         }
     };
+    /**
+     * Function th check if the snake touches the borders of the canvas
+     */
     SnakeGame.prototype.checkBorderCollision = function () {
-        if (this.snakeArray[0].xPostion < TILE_SIZE * 2) {
-            console.log("deadss");
+        if (this.snakeArray[0].xPostion <= 0) {
             this.isGamePaused = true;
         }
-        if (this.snakeArray[0].xPostion > this.canvasWidth - (TILE_SIZE)) {
-            console.log("dead");
+        if (this.snakeArray[0].xPostion >= this.canvasWidth - TILE_SIZE) {
             this.isGamePaused = true;
         }
-        if (this.snakeArray[0].yPosition > this.canvasWidth - 10) {
-            console.log("dead");
+        if (this.snakeArray[0].yPosition >= this.canvasWidth - TILE_SIZE) {
             this.isGamePaused = true;
         }
-        if (this.snakeArray[0].yPosition < TILE_SIZE * 2) {
-            console.log("desad");
+        if (this.snakeArray[0].yPosition <= 0) {
             this.isGamePaused = true;
         }
     };
@@ -159,6 +194,9 @@ var SnakeGame = /** @class */ (function () {
     };
     return SnakeGame;
 }());
+/**
+ * Function to determind which key is pressed by the user
+ */
 function keyPressed(event) {
     var KEYBOARD_BUTTON = event.keyCode;
     var KEY_LEFT = 37;
