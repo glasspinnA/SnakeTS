@@ -8,7 +8,7 @@ var Direction;
 })(Direction || (Direction = {}));
 var snakeGame;
 var TILE_SIZE = 10;
-var GAME_SPEED = 100;
+var GAME_SPEED = 500;
 var Position = /** @class */ (function () {
     function Position(xPosition, yPosition) {
         this.xPostion = xPosition;
@@ -222,7 +222,7 @@ function keyPressed(event) {
             break;
         }
         case KEY_STOP_GAME: {
-            snakeGame.pauseGame();
+            //snakeGame.pauseGame();
             break;
         }
     }
@@ -232,6 +232,7 @@ window.onload = function () {
     var canvas = initGameWindow();
     snakeGame = new SnakeGame(canvas);
     snakeGame.start();
+    speech();
 };
 function initGameWindow() {
     var canvas = document.getElementById('snakeCanvas');
@@ -239,4 +240,39 @@ function initGameWindow() {
     canvas.width = parent.offsetWidth;
     canvas.height = parent.offsetHeight;
     return canvas;
+}
+function speech() {
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var r = new SpeechRecognition();
+    r.continuous = true;
+    r.interimResults = true;
+    r.maxAlternatives = 1;
+    r.lang = 'en-US';
+    r.onresult = function (event) {
+        for (var i = event.resultIndex; i < event.results.length; i++) {
+            var direction = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                textToAction(direction);
+            }
+        }
+    };
+    r.start();
+}
+function textToAction(direction) {
+    direction = direction.toLowerCase();
+    console.log(direction);
+    switch (direction) {
+        case 'white':
+            snakeGame.moveLeft();
+            break;
+        case 'black':
+            snakeGame.moveUp();
+            break;
+        case 'red':
+            snakeGame.moveRight();
+            break;
+        case 'blue':
+            snakeGame.moveDown();
+            break;
+    }
 }

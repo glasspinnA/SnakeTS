@@ -5,7 +5,7 @@ enum Direction {
 
 var snakeGame: SnakeGame;
 const TILE_SIZE = 10;
-const GAME_SPEED = 100;
+const GAME_SPEED = 500;
 
 class Position {
     xPostion: number;
@@ -266,7 +266,7 @@ function keyPressed(event: KeyboardEvent) {
             break;
         }
         case KEY_STOP_GAME: {
-            snakeGame.pauseGame();
+            //snakeGame.pauseGame();
             break;
         }
     }
@@ -279,6 +279,8 @@ window.onload = () => {
 
     snakeGame = new SnakeGame(canvas);
     snakeGame.start();
+
+    speech();
 };
 
 function initGameWindow() {
@@ -290,6 +292,49 @@ function initGameWindow() {
     return canvas;
 }
 
+
+function speech() {
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var r = new SpeechRecognition();
+
+    r.continuous = true;
+    r.interimResults = true;
+    r.maxAlternatives = 1;
+    r.lang = 'en-US';
+
+    r.onresult = (event: any) => {
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            let direction = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                textToAction(direction)
+            }
+        }
+    }
+
+    r.start();
+
+}
+
+function textToAction(direction: String) {
+    direction = direction.toLowerCase();
+
+    console.log(direction);
+
+    switch (direction) {
+        case 'white':
+            snakeGame.moveLeft();
+            break;
+        case 'black':
+            snakeGame.moveUp();
+            break;
+        case 'red':
+            snakeGame.moveRight();
+            break;
+        case 'blue':
+            snakeGame.moveDown();
+            break;
+    }
+}
 
 
 
