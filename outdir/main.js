@@ -222,7 +222,7 @@ function keyPressed(event) {
             break;
         }
         case KEY_STOP_GAME: {
-            //snakeGame.pauseGame();
+            snakeGame.pauseGame();
             break;
         }
     }
@@ -241,14 +241,18 @@ function initGameWindow() {
     canvas.height = parent.offsetHeight;
     return canvas;
 }
+/**
+ * Function that implements the speech recognition function
+ * If the function detects a word it's passed to next function
+ */
 function speech() {
-    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    var r = new SpeechRecognition();
-    r.continuous = true;
-    r.interimResults = true;
-    r.maxAlternatives = 1;
-    r.lang = 'en-US';
-    r.onresult = function (event) {
+    var speechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var recognition = new speechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    recognition.lang = 'en-US';
+    recognition.onresult = function (event) {
         for (var i = event.resultIndex; i < event.results.length; i++) {
             var direction = event.results[i][0].transcript;
             if (event.results[i].isFinal) {
@@ -256,10 +260,15 @@ function speech() {
             }
         }
     };
-    r.start();
+    recognition.start();
 }
+/**
+ * Function that checks if the recognized word said by the user matches any of the words that controls the snakes movement
+ * @param direction
+ */
 function textToAction(direction) {
     direction = direction.toLowerCase();
+    wordlogger(direction);
     switch (direction) {
         case 'white':
             snakeGame.moveLeft();
@@ -275,8 +284,10 @@ function textToAction(direction) {
             break;
     }
 }
-function writeout(word) {
-    console.log(word);
+/**
+ * Function that loggs every recognized word onto to the logger window on the page
+ */
+function wordlogger(word) {
     var divToAppend = document.getElementById('word-container');
     divToAppend.innerHTML += '<li>' + word + '</li>';
 }
