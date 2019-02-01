@@ -260,7 +260,6 @@ function speech() {
 }
 function textToAction(direction) {
     direction = direction.toLowerCase();
-    console.log(direction);
     switch (direction) {
         case 'white':
             snakeGame.moveLeft();
@@ -275,4 +274,9 @@ function textToAction(direction) {
             snakeGame.moveDown();
             break;
     }
+}
+function writeout(word) {
+    console.log(word);
+    var divToAppend = document.getElementById('word-container');
+    divToAppend.innerHTML += '<li>' + word + '</li>';
 }

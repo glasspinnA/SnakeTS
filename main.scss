@@ -96,20 +96,38 @@ body{
 }
 
 .screen{
-    @include center-element;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
     width: 100%;
     height:90%;
     background: $bg-color-webpage;
+}
+
+.game-container{
+    width:60%;
 }
 
 #game-wrapper{
     @include custom-box-shadow;
     width:500px;
     height: 500px;
+    margin: 0 auto;
 }
 
 canvas{
     background: black;
+}
+
+#word-container{
+    height:500px;
+    width:25%;
+    padding:0px 5px 10px 15px;
+    overflow: auto;
+    border:1.5px solid darken($bg-color-search-bar, 10%);
+    border-radius: 10px;
+    background: $bg-color-search-bar;
 }
 
  

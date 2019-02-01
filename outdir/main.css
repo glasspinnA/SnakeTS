@@ -82,12 +82,16 @@ body {
 
 .screen {
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  flex-direction: row;
   align-items: center;
   width: 100%;
   height: 90%;
   background: #7f8fa6;
+}
+
+.game-container {
+  width: 60%;
 }
 
 #game-wrapper {
@@ -96,10 +100,21 @@ body {
   box-shadow: 7px 2px 10px -1px rgba(0, 0, 0, 0.75);
   width: 500px;
   height: 500px;
+  margin: 0 auto;
 }
 
 canvas {
   background: black;
+}
+
+#word-container {
+  height: 500px;
+  width: 25%;
+  padding: 0px 5px 10px 15px;
+  overflow: auto;
+  border: 1.5px solid #5a6777;
+  border-radius: 10px;
+  background: #718093;
 }
 
 /*# sourceMappingURL=main.css.map */

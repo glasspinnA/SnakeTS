@@ -312,13 +312,10 @@ function speech() {
     }
 
     r.start();
-
 }
 
-function textToAction(direction: String) {
+function textToAction(direction: string) {
     direction = direction.toLowerCase();
-
-    console.log(direction);
 
     switch (direction) {
         case 'white':
@@ -334,6 +331,13 @@ function textToAction(direction: String) {
             snakeGame.moveDown();
             break;
     }
+}
+
+function writeout(word: string) {
+    console.log(word);
+    const divToAppend = document.getElementById('word-container');
+
+    divToAppend.innerHTML += '<li>' + word + '</li>';
 }
 
 
