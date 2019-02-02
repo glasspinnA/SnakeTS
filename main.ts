@@ -3,6 +3,7 @@ enum Direction {
     LEFT, RIGHT, UP, DOWN
 }
 
+
 var snakeGame: SnakeGame;
 const TILE_SIZE = 10;
 const GAME_SPEED = 500;
@@ -272,6 +273,10 @@ function keyPressed(event: KeyboardEvent) {
     }
 }
 
+/**
+ * Function which is called when the window gets loaded
+ * Calls various functions to start the game 
+ */
 window.onload = () => {
     document.addEventListener("keydown", keyPressed);
 
@@ -280,9 +285,12 @@ window.onload = () => {
     snakeGame = new SnakeGame(canvas);
     snakeGame.start();
 
-    speech();
+    activateSpeechRecognition();
 };
 
+/**
+ * Function that initialize the game window
+ */
 function initGameWindow() {
     var canvas = <HTMLCanvasElement>document.getElementById('snakeCanvas');
     var parent = <HTMLDivElement>document.getElementById("game-wrapper");
@@ -296,7 +304,7 @@ function initGameWindow() {
  * Function that implements the speech recognition function
  * If the function detects a word it's passed to next function
  */
-function speech() {
+function activateSpeechRecognition() {
     const speechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new speechRecognition();
 
@@ -307,9 +315,9 @@ function speech() {
 
     recognition.onresult = (event: any) => {
         for (let i = event.resultIndex; i < event.results.length; i++) {
-            let direction = event.results[i][0].transcript;
+            let word = event.results[i][0].transcript;
             if (event.results[i].isFinal) {
-                textToAction(direction)
+                textToAction(word)
             }
         }
     }
@@ -319,14 +327,14 @@ function speech() {
 
 /**
  * Function that checks if the recognized word said by the user matches any of the words that controls the snakes movement
- * @param direction 
+ * @param word - The detected word 
  */
-function textToAction(direction: string) {
-    direction = direction.toLowerCase();
+function textToAction(word: string) {
+    word = word.toLowerCase();
 
-    wordlogger(direction);
+    wordlogger(word);
 
-    switch (direction) {
+    switch (word) {
         case 'white':
             snakeGame.moveLeft();
             break;
@@ -339,6 +347,8 @@ function textToAction(direction: string) {
         case 'blue':
             snakeGame.moveDown();
             break;
+        case 'pause':
+            snakeGame.pauseGame();
     }
 }
 
@@ -350,7 +360,3 @@ function wordlogger(word: string) {
 
     divToAppend.innerHTML += '<li>' + word + '</li>';
 }
-
-
-
-

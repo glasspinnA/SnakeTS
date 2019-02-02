@@ -227,13 +227,20 @@ function keyPressed(event) {
         }
     }
 }
+/**
+ * Function which is called when the window gets loaded
+ * Calls various functions to start the game
+ */
 window.onload = function () {
     document.addEventListener("keydown", keyPressed);
     var canvas = initGameWindow();
     snakeGame = new SnakeGame(canvas);
     snakeGame.start();
-    speech();
+    activateSpeechRecognition();
 };
+/**
+ * Function that initialize the game window
+ */
 function initGameWindow() {
     var canvas = document.getElementById('snakeCanvas');
     var parent = document.getElementById("game-wrapper");
@@ -245,7 +252,7 @@ function initGameWindow() {
  * Function that implements the speech recognition function
  * If the function detects a word it's passed to next function
  */
-function speech() {
+function activateSpeechRecognition() {
     var speechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     var recognition = new speechRecognition();
     recognition.continuous = true;
@@ -254,9 +261,9 @@ function speech() {
     recognition.lang = 'en-US';
     recognition.onresult = function (event) {
         for (var i = event.resultIndex; i < event.results.length; i++) {
-            var direction = event.results[i][0].transcript;
+            var word = event.results[i][0].transcript;
             if (event.results[i].isFinal) {
-                textToAction(direction);
+                textToAction(word);
             }
         }
     };
@@ -264,12 +271,12 @@ function speech() {
 }
 /**
  * Function that checks if the recognized word said by the user matches any of the words that controls the snakes movement
- * @param direction
+ * @param word - The detected word
  */
-function textToAction(direction) {
-    direction = direction.toLowerCase();
-    wordlogger(direction);
-    switch (direction) {
+function textToAction(word) {
+    word = word.toLowerCase();
+    wordlogger(word);
+    switch (word) {
         case 'white':
             snakeGame.moveLeft();
             break;
@@ -282,6 +289,8 @@ function textToAction(direction) {
         case 'blue':
             snakeGame.moveDown();
             break;
+        case 'pause':
+            snakeGame.pauseGame();
     }
 }
 /**
