@@ -1,9 +1,15 @@
-# Snake made in TypeScript
-Built with Typescript, Sass and Pug
+# Snake with voice control
+A snake game where you control the snake by your voice.
 
 Purpose with project is to try out TypeScript.
 
-Future goal is to implement Tensorflow.js to learn the model to play the game by itself or by using object dectection to steer the snake.
+## Game Controls
+* white - move left
+* black - move up
+* red - move right 
+* blue - move down
+
+Uses colors to control the snake since the speech recogintion API seems to work better recognize name of colors than directions
 
 ## Demo
 Demo can be found at: https://glasspinna.github.io/SnakeTS/
