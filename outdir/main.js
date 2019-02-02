@@ -274,6 +274,7 @@ function activateSpeechRecognition() {
  * @param word - The detected word
  */
 function textToAction(word) {
+    word = word.replace(/\s+/g, "");
     word = word.toLowerCase();
     wordlogger(word);
     switch (word) {
