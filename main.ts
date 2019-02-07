@@ -1,3 +1,5 @@
+import { Position } from './Position'
+
 
 enum Direction {
     LEFT, RIGHT, UP, DOWN
@@ -7,16 +9,6 @@ enum Direction {
 var snakeGame: SnakeGame;
 const TILE_SIZE = 10;
 const GAME_SPEED = 500;
-
-class Position {
-    xPostion: number;
-    yPosition: number;
-
-    constructor(xPosition: number, yPosition: number) {
-        this.xPostion = xPosition;
-        this.yPosition = yPosition;
-    }
-}
 
 
 class SnakeGame {
@@ -95,31 +87,30 @@ class SnakeGame {
      * Function to move snake 
      */
     private moveSnake() {
-        let headOfSnake = new Position(this.snakeArray[0].xPostion, this.snakeArray[0].yPosition);
+        let headOfSnake = new Position(this.snakeArray[0].getX(), this.snakeArray[0].getY());
 
         switch (this.direction) {
             case Direction.LEFT:
-                headOfSnake.xPostion -= TILE_SIZE;
+                headOfSnake.setX(headOfSnake.getX() - TILE_SIZE);
                 break;
             case Direction.UP:
-                headOfSnake.yPosition -= TILE_SIZE;
+                headOfSnake.setY(headOfSnake.getY() - TILE_SIZE);
                 break;
             case Direction.RIGHT:
-                headOfSnake.xPostion += TILE_SIZE;
+                headOfSnake.setX(headOfSnake.getX() + TILE_SIZE);
                 break;
             case Direction.DOWN:
-                headOfSnake.yPosition += TILE_SIZE;
+                headOfSnake.setY(headOfSnake.getY() + TILE_SIZE);
                 break;
         }
 
         this.snakeArray.unshift(headOfSnake);
 
 
-        const isFoodEaten = (this.snakeArray[0].xPostion === this.food.xPostion
-            && this.snakeArray[0].yPosition === this.food.yPosition);
+        const isFoodEaten = (this.snakeArray[0].getX() === this.food.getX()
+            && this.snakeArray[0].getY() === this.food.getY());
 
         if (isFoodEaten) {
-            console.log("EAT FOOD");
             this.createFood();
         } else {
             this.snakeArray.pop();
@@ -135,8 +126,8 @@ class SnakeGame {
         this.context.strokeStyle = "black";
 
         this.snakeArray.forEach((snakeElement) => {
-            this.context.fillRect(snakeElement.xPostion, snakeElement.yPosition, TILE_SIZE, TILE_SIZE);
-            this.context.strokeRect(snakeElement.xPostion, snakeElement.yPosition, TILE_SIZE, TILE_SIZE);
+            this.context.fillRect(snakeElement.getX(), snakeElement.getY(), TILE_SIZE, TILE_SIZE);
+            this.context.strokeRect(snakeElement.getX(), snakeElement.getY(), TILE_SIZE, TILE_SIZE);
         });
     }
 
@@ -146,11 +137,11 @@ class SnakeGame {
      * Function to create food 
      */
     createFood() {
-        this.food.xPostion = this.generateFoodCoordinates();
-        this.food.yPosition = this.generateFoodCoordinates();
+        this.food.setX(this.generateFoodCoordinates());
+        this.food.setY(this.generateFoodCoordinates());
 
         this.snakeArray.forEach((snakeElement) => {
-            const isFoodOnSnake = (snakeElement.xPostion == this.food.xPostion && snakeElement.yPosition == this.food.yPosition);
+            const isFoodOnSnake = (snakeElement.getX() == this.food.getX() && snakeElement.getY() == this.food.getY());
             if (isFoodOnSnake) {
                 this.createFood();
             }
@@ -172,8 +163,8 @@ class SnakeGame {
     drawFood() {
         this.context.fillStyle = '#fc5c65';
         this.context.strokeStyle = '#eb3b5a';
-        this.context.fillRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
-        this.context.strokeRect(this.food.xPostion, this.food.yPosition, TILE_SIZE, TILE_SIZE);
+        this.context.fillRect(this.food.getX(), this.food.getY(), TILE_SIZE, TILE_SIZE);
+        this.context.strokeRect(this.food.getX(), this.food.getY(), TILE_SIZE, TILE_SIZE);
     }
 
     /**
@@ -181,7 +172,9 @@ class SnakeGame {
      */
     private snakeTouchItself() {
         for (let i = 3; i < this.snakeArray.length; i++) {
-            const isSnakeTouchingItself = this.snakeArray[i].xPostion == this.snakeArray[0].xPostion && this.snakeArray[i].yPosition == this.snakeArray[0].yPosition;
+            const isSnakeTouchingItself = this.snakeArray[i].getX() == this.snakeArray[0].getX()
+                &&
+                this.snakeArray[i].getY() == this.snakeArray[0].getY();
             if (isSnakeTouchingItself) {
                 this.stopGame();
             }
@@ -192,19 +185,19 @@ class SnakeGame {
      * Function th check if the snake touches the borders of the canvas
      */
     private checkBorderCollision() {
-        if (this.snakeArray[0].xPostion <= 0) {
+        if (this.snakeArray[0].getX() <= 0) {
             this.isGamePaused = true;
         }
 
-        if (this.snakeArray[0].xPostion >= this.canvasWidth - TILE_SIZE) {
+        if (this.snakeArray[0].getX() >= this.canvasWidth - TILE_SIZE) {
             this.isGamePaused = true;
         }
 
-        if (this.snakeArray[0].yPosition >= this.canvasWidth - TILE_SIZE) {
+        if (this.snakeArray[0].getY() >= this.canvasWidth - TILE_SIZE) {
             this.isGamePaused = true;
         }
 
-        if (this.snakeArray[0].yPosition <= 0) {
+        if (this.snakeArray[0].getY() <= 0) {
             this.isGamePaused = true;
         }
     }
